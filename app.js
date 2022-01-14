@@ -78,6 +78,10 @@ let ui_model = (function() {
             document.querySelector(DOMStrings.lblPorDespesa).textContent = dados.porDespesa;
         },
 
+        removeTabela: function(elem) {
+            elem.remove();
+        },
+
         descricaoFocus: function(){
             document.querySelector(DOMStrings.inputDescricao).focus();
         },
@@ -109,6 +113,7 @@ data_model = (function(){
         })
         dados.totais[tMovimento] = soma;
     }
+
 
     let dados = {
         items: {             //Guardar cada item em seu tipo de movimento
@@ -173,7 +178,19 @@ data_model = (function(){
 
         funcaoparatestar: function() {
             console.log(dados)
+        },
+
+        removerItem : function(iD, tMovimento) {
+            let indexItem = dados.items[tMovimento].length 
+            for (let i=0; i < indexItem; i++) {
+                let idTemp = dados.items[tMovimento][i].id
+                if (idTemp == iD) {
+                    dados.items[tMovimento].splice(i)
+                    break
+                }
+            }
         }
+
     }
 })();
 
@@ -219,13 +236,24 @@ controller = function(ui, data) {
             }
         });
 
+        let apagarX = function(id, tMovimento, elem) {
+            //1. Remover Item
+            data.removerItem(id, tMovimento)
+            //2. RemoverTabela
+            ui.removeTabela(elem)
+            //ui.removeTabela(elemento)
+        }
+
         document.querySelector(DOMStrings.secTables).addEventListener('click', function(event){
             if(event.target.nodeName === 'BUTTON') {
                 let idCompleto = event.target.parentNode.id;
+                let elem = event.target.parentNode.parentNode
                 let splitId = idCompleto.split("-");
                 let tMovimento = splitId[0];
                 let id = splitId[1];
+                console.log(splitId)
                 //1. Apagar o item da estrutura de dados
+                apagarX(id, tMovimento, elem)
                 //2. Deletar o elemento da UI
                 //3. Atualizar os totais
                 atualizaTotais();
